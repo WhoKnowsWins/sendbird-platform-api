@@ -100,6 +100,29 @@ paths:
           description: Invalid input
       security:
         - api_key: []
+    delete:
+      tags:
+        - Group Channels
+      summary: Delete channel by URL
+      description: ''
+      operationId: groupChannels_deleteById
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: channel_url
+          in: path
+          description: The unique identifier for the channel
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+        '405':
+          description: Invalid input
+      security:
+        - api_key: []
   '/group_channels/{channel_url}/members/{user_id}':
     get:
       tags:
@@ -275,6 +298,62 @@ paths:
           description: Invalid input
       security:
         - api_key: []
+  '/users/{user_id}/push_preference':
+    get:
+      tags:
+        - Users
+      summary: Get a users notification preferences
+      description: ''
+      operationId: users_getNotificationPreferences
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: user_id
+          in: path
+          description: The unique identifier for the user
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+        '401':
+          description: No user found
+        '405':
+          description: Invalid input
+      security:
+        - api_key: []
+    put:
+      tags:
+        - Users
+      summary: Set a users notification preferences
+      description: ''
+      operationId: users_setNotificationPreferences
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: user_id
+          in: path
+          description: The unique identifier for the user
+          required: true
+          type: string
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/NotificationPreferences'
+      responses:
+        '200':
+          description: Success
+        '401':
+          description: No user found
+        '405':
+          description: Invalid input
+      security:
+        - api_key: []
   '/users/{user_id}/push_preference/{channel_url}':
     put:
       tags:
@@ -301,7 +380,7 @@ paths:
           name: body
           required: true
           schema:
-            $ref: '#/definitions/NotificationPreferences'
+            $ref: '#/definitions/ChannelNotificationPreferences'
       responses:
         '200':
           description: Success
@@ -518,6 +597,23 @@ definitions:
         type: integer
         format: int64
   NotificationPreferences:
+    type: object
+    properties:
+      do_not_disturb:
+        type: boolean
+      start_hour:
+        type: integer
+      start_min:
+        type: integer
+      end_hour:
+        type: integer
+      end_min:
+        type: integer
+      timezone:
+        type: string
+      push_sound:
+        type: string
+  ChannelNotificationPreferences:
     type: object
     properties:
       enable:

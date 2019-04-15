@@ -206,6 +206,19 @@ namespace SendBird.Platform.Services
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         System.Threading.Tasks.Task<Channel> GetByIdAsync(string channel_url, System.Threading.CancellationToken cancellationToken);
     
+        /// <summary>Delete channel by URL</summary>
+        /// <param name="channel_url">The unique identifier for the channel</param>
+        /// <returns>Success</returns>
+        /// <exception cref="SwaggerException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task DeleteByIdAsync(string channel_url);
+    
+        /// <summary>Delete channel by URL</summary>
+        /// <param name="channel_url">The unique identifier for the channel</param>
+        /// <returns>Success</returns>
+        /// <exception cref="SwaggerException">A server side error occurred.</exception>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        System.Threading.Tasks.Task DeleteByIdAsync(string channel_url, System.Threading.CancellationToken cancellationToken);
+    
         /// <summary>Check if a user is a member of a Group Channel</summary>
         /// <param name="channel_url">The URL for the channel</param>
         /// <param name="user_id">The URL for the user</param>
@@ -536,6 +549,83 @@ namespace SendBird.Platform.Services
                         }
             
                         return default(Channel);
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
+        /// <summary>Delete channel by URL</summary>
+        /// <param name="channel_url">The unique identifier for the channel</param>
+        /// <returns>Success</returns>
+        /// <exception cref="SwaggerException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task DeleteByIdAsync(string channel_url)
+        {
+            return DeleteByIdAsync(channel_url, System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Delete channel by URL</summary>
+        /// <param name="channel_url">The unique identifier for the channel</param>
+        /// <returns>Success</returns>
+        /// <exception cref="SwaggerException">A server side error occurred.</exception>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        public async System.Threading.Tasks.Task DeleteByIdAsync(string channel_url, System.Threading.CancellationToken cancellationToken)
+        {
+            if (channel_url == null)
+                throw new System.ArgumentNullException("channel_url");
+    
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append("group_channels/{channel_url}");
+            urlBuilder_.Replace("{channel_url}", System.Uri.EscapeDataString(ConvertToString(channel_url, System.Globalization.CultureInfo.InvariantCulture)));
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("DELETE");
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "200") 
+                        {
+                            return;
+                        }
+                        else
+                        if (status_ == "405") 
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new SwaggerException("Invalid input", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new SwaggerException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
                     }
                     finally
                     {
@@ -963,12 +1053,38 @@ namespace SendBird.Platform.Services
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         System.Threading.Tasks.Task<User> GetByIdAsync(string user_id, System.Threading.CancellationToken cancellationToken);
     
+        /// <summary>Get a users notification preferences</summary>
+        /// <param name="user_id">The unique identifier for the user</param>
+        /// <returns>Success</returns>
+        /// <exception cref="SwaggerException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task GetNotificationPreferencesAsync(string user_id);
+    
+        /// <summary>Get a users notification preferences</summary>
+        /// <param name="user_id">The unique identifier for the user</param>
+        /// <returns>Success</returns>
+        /// <exception cref="SwaggerException">A server side error occurred.</exception>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        System.Threading.Tasks.Task GetNotificationPreferencesAsync(string user_id, System.Threading.CancellationToken cancellationToken);
+    
+        /// <summary>Set a users notification preferences</summary>
+        /// <param name="user_id">The unique identifier for the user</param>
+        /// <returns>Success</returns>
+        /// <exception cref="SwaggerException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task SetNotificationPreferencesAsync(string user_id, NotificationPreferences body);
+    
+        /// <summary>Set a users notification preferences</summary>
+        /// <param name="user_id">The unique identifier for the user</param>
+        /// <returns>Success</returns>
+        /// <exception cref="SwaggerException">A server side error occurred.</exception>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        System.Threading.Tasks.Task SetNotificationPreferencesAsync(string user_id, NotificationPreferences body, System.Threading.CancellationToken cancellationToken);
+    
         /// <summary>Set a users notification preferences for a channel</summary>
         /// <param name="user_id">The unique identifier for the user</param>
         /// <param name="channel_url">The unique identifier for the channel</param>
         /// <returns>Success</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task SetChannelNotificationPreferencesAsync(string user_id, string channel_url, NotificationPreferences body);
+        System.Threading.Tasks.Task SetChannelNotificationPreferencesAsync(string user_id, string channel_url, ChannelNotificationPreferences body);
     
         /// <summary>Set a users notification preferences for a channel</summary>
         /// <param name="user_id">The unique identifier for the user</param>
@@ -976,7 +1092,7 @@ namespace SendBird.Platform.Services
         /// <returns>Success</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        System.Threading.Tasks.Task SetChannelNotificationPreferencesAsync(string user_id, string channel_url, NotificationPreferences body, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task SetChannelNotificationPreferencesAsync(string user_id, string channel_url, ChannelNotificationPreferences body, System.Threading.CancellationToken cancellationToken);
     
     }
     
@@ -1187,12 +1303,181 @@ namespace SendBird.Platform.Services
             }
         }
     
+        /// <summary>Get a users notification preferences</summary>
+        /// <param name="user_id">The unique identifier for the user</param>
+        /// <returns>Success</returns>
+        /// <exception cref="SwaggerException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task GetNotificationPreferencesAsync(string user_id)
+        {
+            return GetNotificationPreferencesAsync(user_id, System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Get a users notification preferences</summary>
+        /// <param name="user_id">The unique identifier for the user</param>
+        /// <returns>Success</returns>
+        /// <exception cref="SwaggerException">A server side error occurred.</exception>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        public async System.Threading.Tasks.Task GetNotificationPreferencesAsync(string user_id, System.Threading.CancellationToken cancellationToken)
+        {
+            if (user_id == null)
+                throw new System.ArgumentNullException("user_id");
+    
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append("users/{user_id}/push_preference");
+            urlBuilder_.Replace("{user_id}", System.Uri.EscapeDataString(ConvertToString(user_id, System.Globalization.CultureInfo.InvariantCulture)));
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "200") 
+                        {
+                            return;
+                        }
+                        else
+                        if (status_ == "401") 
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new SwaggerException("No user found", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                        else
+                        if (status_ == "405") 
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new SwaggerException("Invalid input", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new SwaggerException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
+        /// <summary>Set a users notification preferences</summary>
+        /// <param name="user_id">The unique identifier for the user</param>
+        /// <returns>Success</returns>
+        /// <exception cref="SwaggerException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task SetNotificationPreferencesAsync(string user_id, NotificationPreferences body)
+        {
+            return SetNotificationPreferencesAsync(user_id, body, System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Set a users notification preferences</summary>
+        /// <param name="user_id">The unique identifier for the user</param>
+        /// <returns>Success</returns>
+        /// <exception cref="SwaggerException">A server side error occurred.</exception>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        public async System.Threading.Tasks.Task SetNotificationPreferencesAsync(string user_id, NotificationPreferences body, System.Threading.CancellationToken cancellationToken)
+        {
+            if (user_id == null)
+                throw new System.ArgumentNullException("user_id");
+    
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append("users/{user_id}/push_preference");
+            urlBuilder_.Replace("{user_id}", System.Uri.EscapeDataString(ConvertToString(user_id, System.Globalization.CultureInfo.InvariantCulture)));
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(body, _settings.Value));
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
+                    request_.Method = new System.Net.Http.HttpMethod("PUT");
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "200") 
+                        {
+                            return;
+                        }
+                        else
+                        if (status_ == "401") 
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new SwaggerException("No user found", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                        else
+                        if (status_ == "405") 
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new SwaggerException("Invalid input", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new SwaggerException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
         /// <summary>Set a users notification preferences for a channel</summary>
         /// <param name="user_id">The unique identifier for the user</param>
         /// <param name="channel_url">The unique identifier for the channel</param>
         /// <returns>Success</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task SetChannelNotificationPreferencesAsync(string user_id, string channel_url, NotificationPreferences body)
+        public System.Threading.Tasks.Task SetChannelNotificationPreferencesAsync(string user_id, string channel_url, ChannelNotificationPreferences body)
         {
             return SetChannelNotificationPreferencesAsync(user_id, channel_url, body, System.Threading.CancellationToken.None);
         }
@@ -1203,7 +1488,7 @@ namespace SendBird.Platform.Services
         /// <returns>Success</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        public async System.Threading.Tasks.Task SetChannelNotificationPreferencesAsync(string user_id, string channel_url, NotificationPreferences body, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task SetChannelNotificationPreferencesAsync(string user_id, string channel_url, ChannelNotificationPreferences body, System.Threading.CancellationToken cancellationToken)
         {
             if (user_id == null)
                 throw new System.ArgumentNullException("user_id");
@@ -2562,6 +2847,136 @@ namespace SendBird.Platform.Services
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.27.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class NotificationPreferences : System.ComponentModel.INotifyPropertyChanged
     {
+        private bool? _do_not_disturb;
+        private int? _start_hour;
+        private int? _start_min;
+        private int? _end_hour;
+        private int? _end_min;
+        private string _timezone;
+        private string _push_sound;
+    
+        [Newtonsoft.Json.JsonProperty("do_not_disturb", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool? Do_not_disturb
+        {
+            get { return _do_not_disturb; }
+            set 
+            {
+                if (_do_not_disturb != value)
+                {
+                    _do_not_disturb = value; 
+                    RaisePropertyChanged();
+                }
+            }
+        }
+    
+        [Newtonsoft.Json.JsonProperty("start_hour", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int? Start_hour
+        {
+            get { return _start_hour; }
+            set 
+            {
+                if (_start_hour != value)
+                {
+                    _start_hour = value; 
+                    RaisePropertyChanged();
+                }
+            }
+        }
+    
+        [Newtonsoft.Json.JsonProperty("start_min", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int? Start_min
+        {
+            get { return _start_min; }
+            set 
+            {
+                if (_start_min != value)
+                {
+                    _start_min = value; 
+                    RaisePropertyChanged();
+                }
+            }
+        }
+    
+        [Newtonsoft.Json.JsonProperty("end_hour", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int? End_hour
+        {
+            get { return _end_hour; }
+            set 
+            {
+                if (_end_hour != value)
+                {
+                    _end_hour = value; 
+                    RaisePropertyChanged();
+                }
+            }
+        }
+    
+        [Newtonsoft.Json.JsonProperty("end_min", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int? End_min
+        {
+            get { return _end_min; }
+            set 
+            {
+                if (_end_min != value)
+                {
+                    _end_min = value; 
+                    RaisePropertyChanged();
+                }
+            }
+        }
+    
+        [Newtonsoft.Json.JsonProperty("timezone", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Timezone
+        {
+            get { return _timezone; }
+            set 
+            {
+                if (_timezone != value)
+                {
+                    _timezone = value; 
+                    RaisePropertyChanged();
+                }
+            }
+        }
+    
+        [Newtonsoft.Json.JsonProperty("push_sound", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Push_sound
+        {
+            get { return _push_sound; }
+            set 
+            {
+                if (_push_sound != value)
+                {
+                    _push_sound = value; 
+                    RaisePropertyChanged();
+                }
+            }
+        }
+    
+        public string ToJson() 
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+        }
+    
+        public static NotificationPreferences FromJson(string data)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<NotificationPreferences>(data);
+        }
+    
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected virtual void RaisePropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
+        {
+            var handler = PropertyChanged;
+            if (handler != null) 
+                handler(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+        }
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.27.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class ChannelNotificationPreferences : System.ComponentModel.INotifyPropertyChanged
+    {
         private bool? _enable;
     
         [Newtonsoft.Json.JsonProperty("enable", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -2583,9 +2998,9 @@ namespace SendBird.Platform.Services
             return Newtonsoft.Json.JsonConvert.SerializeObject(this);
         }
     
-        public static NotificationPreferences FromJson(string data)
+        public static ChannelNotificationPreferences FromJson(string data)
         {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<NotificationPreferences>(data);
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<ChannelNotificationPreferences>(data);
         }
     
         public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
