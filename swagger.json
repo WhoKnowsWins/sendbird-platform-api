@@ -469,6 +469,57 @@
         ]
       }
     },
+    "/users/{user_id}/my_group_channels": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Retrieves the total number of the user’s currently unread messages.",
+        "description": "Retrieves the total number of the user’s currently unread messages in the group channels.",
+        "operationId": "users_getUserChannel",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "The unique identifier for the user",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "channel_urls",
+            "in": "query",
+            "description": "Comma seperated list of channel urls.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/ChannelList"
+            }
+          },
+          "401": {
+            "description": "No user found"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
     "/users/{user_id}/push_preference": {
       "get": {
         "tags": [
@@ -716,6 +767,9 @@
         "max_length_message": {
           "type": "integer"
         },
+        "unread_message_count": {
+          "type": "integer"
+        },
         "data": {
           "type": "string"
         },
@@ -815,6 +869,15 @@
           "type": "boolean"
         },
         "last_seen_at": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "UserUnreadMessageCount": {
+      "type": "object",
+      "properties": {
+        "unread_count": {
           "type": "integer",
           "format": "int64"
         }
